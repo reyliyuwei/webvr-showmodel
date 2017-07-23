@@ -1,0 +1,116 @@
+<html>
+<head>
+    <script src="aframe.js"></script>
+    <a href="another.html">Get inside</a>
+</head>
+<body>
+
+<script>
+    AFRAME.registerComponent('jump-on-click', {
+        init: function () {
+            this.el.addEventListener('click', function () {
+                window.location.href="another.html";
+            });
+        }
+    });
+
+
+    //mouseenter click mouseleave
+    AFRAME.registerComponent('color-change', {
+        init: function () {
+            var data = this.data;
+            var COLORS = ['red', 'green', 'blue','yellow','white','darkred','pink'];
+            this.el.addEventListener('click', function () {
+                var randomIndex = Math.floor(Math.random() * COLORS.length);
+                this.setAttribute('color', COLORS[randomIndex]);
+            });
+        }
+    });
+
+// move camera to cursor click position
+    AFRAME.registerComponent('move-camera', {
+        init: function () {
+            this.el.addEventListener('click', function () {
+                var oldp = this.getAttribute('position');
+                var rotation = this.getAttribute('rotation');
+                console.log("roatation");
+                console.log(rotation);
+                var lookat = new Object;
+                lookat.x = 0;
+                lookat.y = 0;
+                lookat.z = -1;
+                //x
+                lookat.y = lookat.y*Math.cos(rotation.x*Math.PI/180.0) - lookat.z*Math.sin(rotation.x*Math.PI/180.0);
+                lookat.z = lookat.y*Math.sin(rotation.x*Math.PI/180.0) + lookat.z*Math.cos(rotation.x*Math.PI/180.0);
+
+                //y
+                lookat.x = lookat.z*Math.sin(rotation.y*Math.PI/180.0) + lookat.x*Math.cos(rotation.y*Math.PI/180.0);
+                lookat.z = lookat.z*Math.cos(rotation.y*Math.PI/180.0) - lookat.x*Math.sin(rotation.y*Math.PI/180.0);
+
+                //z
+                lookat.x = -lookat.y*Math.sin(rotation.z*Math.PI/180.0) + lookat.x*Math.cos(rotation.z*Math.PI/180.0);
+                lookat.y = lookat.y*Math.cos(rotation.z*Math.PI/180.0) + lookat.x*Math.sin(rotation.z*Math.PI/180.0);
+
+                var l = lookat.x*lookat.x + lookat.y*lookat.y + lookat.z*lookat.z;
+                l = Math.sqrt(l);
+                lookat.x = lookat.x / l;
+                lookat.y = lookat.y / l;
+                lookat.z = lookat.z / l;
+                console.log("newlookat");
+                console.log(lookat);
+
+                var newp = new Object;
+                console.log(oldp);
+
+                newp.x = oldp.x + lookat.x*3;
+                newp.y = oldp.y;
+//                newp.y = oldp.y - lookat.y*0.5;
+                newp.z = oldp.z + lookat.z*3;
+
+                console.log(newp);
+                this.setAttribute('position',newp);
+            });
+        }
+    });
+</script>
+
+
+<a-scene stats>
+    <a-assets>
+        <!--<a-asset-item id="kitchenobj" src="obj/kitchen/kitchen.obj"></a-asset-item>-->
+        <!--<a-asset-item id="kitchenmtl" src="obj/kitchen/kitchen.mtl"></a-asset-item>-->
+        <a-asset-item id="tableobj" src="obj/kitchen/kitchen.obj"></a-asset-item>
+        <!--<a-asset-item id="dae" src="obj/Model/Model.obj"></a-asset-item>-->
+        <a-asset-item id="tablemtl" src="obj/kitchen/kitchen.mtl"></a-asset-item>
+        <img id="room" src="pano/a.jpg">
+        <!--<img id="floor" src="img/floor.jpg" >-->
+        <!--<img id="dusk" src="pano/dusk.jpg">-->
+    </a-assets>
+
+    <!--<a-box color="darkred" scale="2 2 2" position="18.35 34.20 -218" depth="5" width="3" height="3" color-change jump-on-click>-->
+        <!--&lt;!&ndash;<a-animation attribute="position" to="18.35 45.40 -218" direction="alternate" dur="2000"&ndash;&gt;-->
+        <!--&lt;!&ndash;repeat="indefinite">&ndash;&gt;-->
+        <!--&lt;!&ndash;</a-animation>&ndash;&gt;-->
+    <!--</a-box>-->
+
+    <a-light type="ambient" color="white"></a-light>
+    <!--<a-obj-model src="#kitchenobj" mtl="#kitchenmtl" position="-112 0 -86"></a-obj-model>-->
+    <a-obj-model src="#tableobj" mtl="#tablemtl" position="-506.132 113.655 549.82" scale="1 1 1" rotation="0 0 0"></a-obj-model>
+    <!--<a-plane src="#floor" side="double" rotation="90 0 0" width="600" height="600" position="0 0.2 -50"></a-plane>-->
+    <a-camera camera="userHeight: 1.6" position="-337 293.7 464.6"  rotation="-13.9 -46.3 0" look-controls wasd-controls move-camera>
+        <!--<a-animation attribute="position" to="14.92 3.46 36.82" direction="alternate" dur="5000"-->
+                     <!--repeat="indefinite"></a-animation>-->
+        <!--<a-cursor-->
+                    <!--geometry="primitive: circle; radius: 0.005"-->
+                    <!--color="#ffffff">-->
+            <!--<a-animation begin="cursor-fusing"  attribute="scale" from="1 1 1" to="3 3 3" dur="1000" >-->
+            <!--</a-animation>-->
+            <!--<a-animation begin="click"  attribute="scale" from="3 3 3" to="1 1 1" dur="1500">-->
+            <!--</a-animation>-->
+        <!--</a-cursor>-->
+    </a-camera>
+
+    <a-sky src="#room"></a-sky>
+</a-scene>
+<body>
+</html>
